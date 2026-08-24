@@ -1,0 +1,666 @@
+<scene version="2.1.0">
+
+<!-- Defaults, these can be set via the command line: -Darg=value -->
+
+
+<!-- Camera and Rendering Parameters -->
+
+	<integrator type="path" id="elm__0" name="elm__0">
+		<integer name="max_depth" value="12"/>
+	</integrator>
+
+<!-- Materials -->
+
+	<bsdf type="twosided" id="mat-itu_wood" name="mat-itu_wood">
+		<bsdf type="principled" name="bsdf">
+			<texture type="bitmap" name="base_color">
+				<string name="filename" value="textures/EnvSamplerTex.png"/>
+			</texture>
+			<rgb value="1.000000 1.000000 1.000000" name="spec_tint"/>
+			<float name="spec_trans" value="0.000000"/>
+			<float name="metallic" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="roughness" value="0.305573"/>
+			<float name="sheen" value="0.000000"/>
+			<rgb value="1.000000 1.000000 1.000000" name="sheen_tint"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoat_gloss" value="0.000900"/>
+			<float name="specular" value="1.000000"/>
+		</bsdf>
+	</bsdf>
+	<bsdf type="twosided" id="mat-itu_plywood" name="mat-itu_plywood">
+		<bsdf type="principled" name="bsdf">
+			<texture type="bitmap" name="base_color">
+				<string name="filename" value="textures/EnvSamplerTex.001.jpg"/>
+			</texture>
+			<rgb value="1.000000 1.000000 1.000000" name="spec_tint"/>
+			<float name="spec_trans" value="0.000000"/>
+			<float name="metallic" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="roughness" value="0.305573"/>
+			<float name="sheen" value="0.000000"/>
+			<rgb value="1.000000 1.000000 1.000000" name="sheen_tint"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoat_gloss" value="0.000900"/>
+			<float name="specular" value="1.000000"/>
+		</bsdf>
+	</bsdf>
+	<bsdf type="twosided" id="mat-itu_metal" name="mat-itu_metal">
+		<bsdf type="principled" name="bsdf">
+			<rgb value="0.595000 0.595000 0.595000" name="base_color"/>
+			<rgb value="1.000000 1.000000 1.000000" name="spec_tint"/>
+			<float name="spec_trans" value="0.000000"/>
+			<float name="metallic" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="roughness" value="0.305573"/>
+			<float name="sheen" value="0.000000"/>
+			<rgb value="1.000000 1.000000 1.000000" name="sheen_tint"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoat_gloss" value="0.000900"/>
+			<float name="specular" value="1.000000"/>
+		</bsdf>
+	</bsdf>
+	<bsdf type="twosided" id="mat-itu_brick" name="mat-itu_brick">
+		<bsdf type="principled" name="bsdf">
+			<rgb value="0.800000 0.800000 0.800000" name="base_color"/>
+			<rgb value="1.000000 1.000000 1.000000" name="spec_tint"/>
+			<float name="spec_trans" value="0.000000"/>
+			<float name="metallic" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="roughness" value="0.305573"/>
+			<float name="sheen" value="0.000000"/>
+			<rgb value="1.000000 1.000000 1.000000" name="sheen_tint"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoat_gloss" value="0.000900"/>
+			<float name="specular" value="1.000000"/>
+		</bsdf>
+	</bsdf>
+	<bsdf type="twosided" id="mat-itu_concrete" name="mat-itu_concrete">
+		<bsdf type="principled" name="bsdf">
+			<rgb value="0.506933 0.506933 0.506933" name="base_color"/>
+			<rgb value="1.000000 1.000000 1.000000" name="spec_tint"/>
+			<float name="spec_trans" value="0.000000"/>
+			<float name="metallic" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="roughness" value="0.305573"/>
+			<float name="sheen" value="0.000000"/>
+			<rgb value="1.000000 1.000000 1.000000" name="sheen_tint"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoat_gloss" value="0.000900"/>
+			<float name="specular" value="1.000000"/>
+		</bsdf>
+	</bsdf>
+	<bsdf type="twosided" id="mat-itu_chipboard" name="mat-itu_chipboard">
+		<bsdf type="principled" name="bsdf">
+			<texture type="bitmap" name="base_color">
+				<string name="filename" value="textures/EnvSamplerTex.011.png"/>
+			</texture>
+			<rgb value="1.000000 1.000000 1.000000" name="spec_tint"/>
+			<float name="spec_trans" value="0.000000"/>
+			<float name="metallic" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="roughness" value="0.305573"/>
+			<float name="sheen" value="0.000000"/>
+			<rgb value="1.000000 1.000000 1.000000" name="sheen_tint"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoat_gloss" value="0.000900"/>
+			<float name="specular" value="1.000000"/>
+		</bsdf>
+	</bsdf>
+	<bsdf type="twosided" id="mat-itu_glass" name="mat-itu_glass">
+		<bsdf type="principled" name="bsdf">
+			<rgb value="0.800000 0.800000 0.800000" name="base_color"/>
+			<rgb value="1.000000 1.000000 1.000000" name="spec_tint"/>
+			<float name="spec_trans" value="0.000000"/>
+			<float name="metallic" value="1.000000"/>
+			<float name="anisotropic" value="0.000000"/>
+			<float name="roughness" value="0.305573"/>
+			<float name="sheen" value="0.000000"/>
+			<rgb value="1.000000 1.000000 1.000000" name="sheen_tint"/>
+			<float name="clearcoat" value="0.000000"/>
+			<float name="clearcoat_gloss" value="0.000900"/>
+			<float name="specular" value="1.000000"/>
+		</bsdf>
+	</bsdf>
+
+<!-- Emitters -->
+
+
+<!-- Shapes -->
+
+	<shape type="ply" id="elm__3" name="elm__3">
+		<string name="filename" value="meshes/TELLUS_arena_blueScreen-itu_wood.ply"/>
+		<ref id="mat-itu_wood" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__4" name="elm__4">
+		<string name="filename" value="meshes/TELLUS_arena_blueScreen-itu_plywood.ply"/>
+		<ref id="mat-itu_plywood" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__6" name="elm__6">
+		<string name="filename" value="meshes/TELLUS_arena_booth_door-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__7" name="elm__7">
+		<string name="filename" value="meshes/TELLUS_arena_booth_door-itu_metal-001.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__8" name="elm__8">
+		<string name="filename" value="meshes/TELLUS_arena_booth_door_2-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__9" name="elm__9">
+		<string name="filename" value="meshes/TELLUS_arena_booth_door_2-itu_metal-001.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__10" name="elm__10">
+		<string name="filename" value="meshes/TELLUS_arena_booths-itu_wood.ply"/>
+		<ref id="mat-itu_wood" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__11" name="elm__11">
+		<string name="filename" value="meshes/TELLUS_arena_booths-itu_wood-001.ply"/>
+		<ref id="mat-itu_wood" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__12" name="elm__12">
+		<string name="filename" value="meshes/TELLUS_arena_booths-itu_plywood.ply"/>
+		<ref id="mat-itu_plywood" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__14" name="elm__14">
+		<string name="filename" value="meshes/TELLUS_arena_booths_001.ply"/>
+		<ref id="mat-itu_brick" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__15" name="elm__15">
+		<string name="filename" value="meshes/TELLUS_arena_doorFrame.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__17" name="elm__17">
+		<string name="filename" value="meshes/TELLUS_arena_FLOOR-itu_concrete.ply"/>
+		<ref id="mat-itu_concrete" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__18" name="elm__18">
+		<string name="filename" value="meshes/TELLUS_arena_FLOOR-itu_plywood.ply"/>
+		<ref id="mat-itu_plywood" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__19" name="elm__19">
+		<string name="filename" value="meshes/TELLUS_arena_FLOOR-itu_plywood-001.ply"/>
+		<ref id="mat-itu_plywood" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__20" name="elm__20">
+		<string name="filename" value="meshes/TELLUS_arena_fluorescentLamp-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__21" name="elm__21">
+		<string name="filename" value="meshes/TELLUS_arena_fluorescentLamp-itu_metal-001.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__22" name="elm__22">
+		<string name="filename" value="meshes/TELLUS_arena_fluorescentLamp-itu_metal-002.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__23" name="elm__23">
+		<string name="filename" value="meshes/TELLUS_arena_fluorescentLamp-itu_metal-003.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__24" name="elm__24">
+		<string name="filename" value="meshes/TELLUS_arena_fluorescentLamp_001-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__25" name="elm__25">
+		<string name="filename" value="meshes/TELLUS_arena_fluorescentLamp_001-itu_metal-001.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__26" name="elm__26">
+		<string name="filename" value="meshes/TELLUS_arena_fluorescentLamp_001-itu_metal-002.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__28" name="elm__28">
+		<string name="filename" value="meshes/TELLUS_arena_fron_decal.ply"/>
+		<ref id="mat-itu_chipboard" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__30" name="elm__30">
+		<string name="filename" value="meshes/TELLUS_arena_FURNITURE_001-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__31" name="elm__31">
+		<string name="filename" value="meshes/TELLUS_arena_FURNITURE_001-itu_wood.ply"/>
+		<ref id="mat-itu_wood" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__32" name="elm__32">
+		<string name="filename" value="meshes/TELLUS_arena_FURNITURE_001-itu_glass.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__33" name="elm__33">
+		<string name="filename" value="meshes/TELLUS_arena_FURNITURE_001-itu_metal-001.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__34" name="elm__34">
+		<string name="filename" value="meshes/TELLUS_arena_FURNITURE_001-itu_glass-001.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__35" name="elm__35">
+		<string name="filename" value="meshes/TELLUS_arena_FURNITURE_001-itu_glass-002.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__36" name="elm__36">
+		<string name="filename" value="meshes/TELLUS_arena_FURNITURE_001-itu_plywood.ply"/>
+		<ref id="mat-itu_plywood" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__37" name="elm__37">
+		<string name="filename" value="meshes/TELLUS_arena_furniture_desks-itu_wood.ply"/>
+		<ref id="mat-itu_wood" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__38" name="elm__38">
+		<string name="filename" value="meshes/TELLUS_arena_furniture_desks-itu_wood-001.ply"/>
+		<ref id="mat-itu_wood" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__39" name="elm__39">
+		<string name="filename" value="meshes/TELLUS_arena_furniture_desks-itu_wood-002.ply"/>
+		<ref id="mat-itu_wood" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__40" name="elm__40">
+		<string name="filename" value="meshes/TELLUS_arena_furniture_EXTRAS-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__41" name="elm__41">
+		<string name="filename" value="meshes/TELLUS_arena_furniture_EXTRAS-itu_metal-001.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__42" name="elm__42">
+		<string name="filename" value="meshes/TELLUS_arena_furniture_whiteBooths-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__43" name="elm__43">
+		<string name="filename" value="meshes/TELLUS_arena_furniture_whiteBooths-itu_metal-001.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__44" name="elm__44">
+		<string name="filename" value="meshes/TELLUS_arena_furniture_whiteBooths-itu_plywood.ply"/>
+		<ref id="mat-itu_plywood" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__45" name="elm__45">
+		<string name="filename" value="meshes/TELLUS_arena_lightBulbs_007.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__46" name="elm__46">
+		<string name="filename" value="meshes/TELLUS_arena_outerWalls.ply"/>
+		<ref id="mat-itu_brick" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__47" name="elm__47">
+		<string name="filename" value="meshes/TELLUS_arena_Pillars.ply"/>
+		<ref id="mat-itu_concrete" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__48" name="elm__48">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_karmi_004-itu_glass.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__49" name="elm__49">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_karmi_004-itu_glass-001.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__50" name="elm__50">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__51" name="elm__51">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi-itu_glass.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__52" name="elm__52">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi-itu_glass-001.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__53" name="elm__53">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_001-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__54" name="elm__54">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_001-itu_glass.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__55" name="elm__55">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_001-itu_glass-001.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__56" name="elm__56">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_002-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__57" name="elm__57">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_002-itu_glass.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__58" name="elm__58">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_002-itu_glass-001.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__59" name="elm__59">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_003-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__60" name="elm__60">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_003-itu_glass.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__61" name="elm__61">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_003-itu_glass-001.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__62" name="elm__62">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_004-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__63" name="elm__63">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_004-itu_glass.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__64" name="elm__64">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_004-itu_glass-001.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__65" name="elm__65">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_005-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__66" name="elm__66">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_005-itu_glass.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__67" name="elm__67">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_005-itu_glass-001.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__68" name="elm__68">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_006-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__69" name="elm__69">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_006-itu_glass.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__70" name="elm__70">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_006-itu_glass-001.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__71" name="elm__71">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_007-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__72" name="elm__72">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_007-itu_glass.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__73" name="elm__73">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_007-itu_glass-001.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__74" name="elm__74">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_008-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__75" name="elm__75">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_008-itu_glass.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__76" name="elm__76">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_008-itu_glass-001.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__77" name="elm__77">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_009-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__78" name="elm__78">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_009-itu_glass.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__79" name="elm__79">
+		<string name="filename" value="meshes/TELLUS_arena_r-aula_tellus_Ovi_009-itu_glass-001.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__80" name="elm__80">
+		<string name="filename" value="meshes/TELLUS_arena_R_Aula_tkkToimisto_Ovi-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__81" name="elm__81">
+		<string name="filename" value="meshes/TELLUS_arena_R_Aula_tkkToimisto_Ovi-itu_glass.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__82" name="elm__82">
+		<string name="filename" value="meshes/TELLUS_arena_R_Aula_tkkToimisto_Ovi-itu_glass-001.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__83" name="elm__83">
+		<string name="filename" value="meshes/TELLUS_arena_roomNames.ply"/>
+		<ref id="mat-itu_wood" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__84" name="elm__84">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_DOOR_01.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__85" name="elm__85">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_DOOR_005.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__86" name="elm__86">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_DOOR_006.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__87" name="elm__87">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_DOOR_007.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__88" name="elm__88">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_DOOR_008.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__89" name="elm__89">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_DOOR_009.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__90" name="elm__90">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_DOOR_010.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__91" name="elm__91">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_DOOR_011.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__92" name="elm__92">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_DOOR_012.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__93" name="elm__93">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_DOOR_014.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__94" name="elm__94">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_DOOR_015.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__95" name="elm__95">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_DOOR_016.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__96" name="elm__96">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_DOOR_017.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__97" name="elm__97">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_greyDOOR-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__98" name="elm__98">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_greyDOOR-itu_metal-001.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__99" name="elm__99">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_greyDOOR_001-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__100" name="elm__100">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_greyDOOR_001-itu_metal-001.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__101" name="elm__101">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_greyDOOR_002-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__102" name="elm__102">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_greyDOOR_002-itu_metal-001.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__103" name="elm__103">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_greyDOOR_003-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__104" name="elm__104">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_greyDOOR_003-itu_metal-001.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__105" name="elm__105">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_greyDOOR_004-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__106" name="elm__106">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_greyDOOR_004-itu_metal-001.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__107" name="elm__107">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_greyDOOR_005-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__108" name="elm__108">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_greyDOOR_005-itu_metal-001.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__109" name="elm__109">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_greyDOOR_006-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__110" name="elm__110">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_greyDOOR_006-itu_metal-001.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__111" name="elm__111">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_greyDOOR_007-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__112" name="elm__112">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_greyDOOR_007-itu_metal-001.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__113" name="elm__113">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_greyDOOR_008-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__114" name="elm__114">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_greyDOOR_008-itu_metal-001.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__115" name="elm__115">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_greyDOOR_009-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__116" name="elm__116">
+		<string name="filename" value="meshes/TELLUS_arena_SMALL_greyDOOR_009-itu_metal-001.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__117" name="elm__117">
+		<string name="filename" value="meshes/TELLUS_arena_tellus_windows_001.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__118" name="elm__118">
+		<string name="filename" value="meshes/TELLUS_arena_walls-itu_plywood.ply"/>
+		<ref id="mat-itu_plywood" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__119" name="elm__119">
+		<string name="filename" value="meshes/TELLUS_arena_walls-itu_brick.ply"/>
+		<ref id="mat-itu_brick" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__120" name="elm__120">
+		<string name="filename" value="meshes/TELLUS_arena_walls-itu_brick-001.ply"/>
+		<ref id="mat-itu_brick" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__121" name="elm__121">
+		<string name="filename" value="meshes/TELLUS_arena_walls-itu_wood.ply"/>
+		<ref id="mat-itu_wood" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__122" name="elm__122">
+		<string name="filename" value="meshes/TELLUS_arena_walls-itu_plywood-001.ply"/>
+		<ref id="mat-itu_plywood" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__123" name="elm__123">
+		<string name="filename" value="meshes/TELLUS_arena_walls-itu_brick-002.ply"/>
+		<ref id="mat-itu_brick" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__124" name="elm__124">
+		<string name="filename" value="meshes/TELLUS_arena_walls-itu_plywood-002.ply"/>
+		<ref id="mat-itu_plywood" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__125" name="elm__125">
+		<string name="filename" value="meshes/TELLUS_arena_walls-itu_plywood-003.ply"/>
+		<ref id="mat-itu_plywood" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__126" name="elm__126">
+		<string name="filename" value="meshes/TELLUS_arena_walls-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__127" name="elm__127">
+		<string name="filename" value="meshes/TELLUS_arena_walls-itu_wood-001.ply"/>
+		<ref id="mat-itu_wood" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__128" name="elm__128">
+		<string name="filename" value="meshes/TELLUS_arena_WAlls_002-itu_wood.ply"/>
+		<ref id="mat-itu_wood" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__129" name="elm__129">
+		<string name="filename" value="meshes/TELLUS_arena_WAlls_002-itu_wood-001.ply"/>
+		<ref id="mat-itu_wood" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__130" name="elm__130">
+		<string name="filename" value="meshes/TELLUS_arena_WAlls_002-itu_plywood.ply"/>
+		<ref id="mat-itu_plywood" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__131" name="elm__131">
+		<string name="filename" value="meshes/TELLUS_arena_windows-itu_glass.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__132" name="elm__132">
+		<string name="filename" value="meshes/TELLUS_arena_windows-itu_glass-001.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__133" name="elm__133">
+		<string name="filename" value="meshes/TELLUS_arena_yellow_booths_double-itu_wood.ply"/>
+		<ref id="mat-itu_wood" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__134" name="elm__134">
+		<string name="filename" value="meshes/TELLUS_arena_yellow_booths_double-itu_glass.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__135" name="elm__135">
+		<string name="filename" value="meshes/TELLUS_arena_yellow_booths_double-itu_plywood.ply"/>
+		<ref id="mat-itu_plywood" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__136" name="elm__136">
+		<string name="filename" value="meshes/TELLUS_arena_yellow_booths_double-itu_metal.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__137" name="elm__137">
+		<string name="filename" value="meshes/TELLUS_arena_yellow_booths_double-itu_glass-001.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__138" name="elm__138">
+		<string name="filename" value="meshes/TELLUS_arena_yellow_booths_double-itu_glass-002.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__139" name="elm__139">
+		<string name="filename" value="meshes/TELLUS_arena_yellow_booths_double-itu_glass-003.ply"/>
+		<ref id="mat-itu_glass" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="elm__140" name="elm__140">
+		<string name="filename" value="meshes/TELLUS_arena_YellowPillars.ply"/>
+		<ref id="mat-itu_metal" name="bsdf"/>
+	</shape>
+
+<!-- Volumes -->
+
+</scene>

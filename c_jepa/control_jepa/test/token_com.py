@@ -1,0 +1,633 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+import gymnasium as gym
+import numpy as np
+import cv2
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from gazebo_env import GazeboEnv
+import rospy
+from nav_msgs.msg import Odometry
+from threading import Lock
+from wutils.models import Encoder, Predictor, PowerPredictor 
+from std_msgs.msg import Float32MultiArray,MultiArrayDimension,Int32
+import time
+import os
+from cv_bridge import CvBridge
+from sensor_msgs.msg import Image
+from rosgraph_msgs.msg import Clock
+from models.vit_encoder import ViTEncoder
+from models.vit_decoder import ViTDecoder
+from models.temporal_transformer import TemporalTransformer
+from utils.patch_utils import patches_to_image
+import psutil
+
+AE_CKPT = "/home/icon-group/catkin_ws/src/i_jepa/control_jepa/test/vit_model/autoencoder3.pt"
+TEMP_CKPT = "/home/icon-group/catkin_ws/src/i_jepa/control_jepa/test/vit_model/temporal3.pt"
+
+csv_path = "/home/icon-group/catkin_ws/src/i_jepa/control_jepa/test/predicted_power_log.csv"
+case_id = "case_7/"
+output_dir = "/home/icon-group/catkin_ws/src/i_jepa/control_jepa/test/baseline_dqn/" + case_id
+_video_writers = {} 
+last_completed = None
+current_image = None
+bridge = CvBridge()
+channels = None
+
+prev_frame_global1 = None
+prev_frame_global2 = None
+prev_frame_global3 = None
+prev_frame_global4 = None
+prev_frame_global5 = None
+
+
+# ============================================================
+# Preprocessing (SAME AS TRAINING)
+# ============================================================
+
+def np_img_to_cv2(img):
+    """
+    img: numpy HWC float [0,1] or uint8
+    """
+    if img.max() <= 1.0:
+        img = (img * 255).astype(np.uint8)
+    return img[:, :, ::-1]  # RGB → BGR
+
+def torch_img_to_cv2(img):
+    """
+    img: torch CHW float [0,1]
+    """
+    img = img.permute(1, 2, 0).detach().cpu().numpy()
+    img = (img * 255).clip(0, 255).astype(np.uint8)
+    return img[:, :, ::-1]  # RGB → BGR
+
+def chw_to_hwc(img_chw):
+    # img_chw: (3,84,84) in [0,1]
+    return img_chw.permute(1, 2, 0).detach().cpu().clamp(0, 1)
+
+
+
+def preprocess(img):
+    """
+    Handles:
+    - RGB HWC  (H, W, 3)
+    - RGB CHW  (3, H, W)
+    - Grayscale (H, W)
+    """
+    # If CHW -> HWC
+    if img.ndim == 3 and img.shape[0] == 3:
+        img = np.transpose(img, (1, 2, 0))  # CHW -> HWC
+
+    # Resize (safe for both)
+    img = cv2.resize(img, (84, 84))
+
+    # If RGB -> grayscale
+    if img.ndim == 3:
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+
+    img = img.astype(np.float32) / 255.0
+    return img
+
+# ============================================================
+# Image Wrapper (SAME AS TRAINING)
+# ============================================================
+
+class ImageEnv(gym.Wrapper):
+    def __init__(self, env, skip_frames=3 ,stack_frames=4, initial_no_op=5):
+        super().__init__(env)
+        self.skip_frames = skip_frames
+        self.stack_frames = stack_frames
+        self.initial_no_op = initial_no_op
+
+    def reset(self):
+        s, info = self.env.reset()
+        for _ in range(self.initial_no_op):
+            s, _, terminated, truncated, _ = self.env.step(0)
+            if terminated or truncated:
+                s, info = self.env.reset()
+        s = preprocess(s)
+        self.stacked_state = np.tile(s, (self.stack_frames, 1, 1))
+        return self.stacked_state, info
+
+    def step(self, action):
+        reward = 0.0
+        for _ in range(self.skip_frames):
+            s, r, terminated, truncated, info = self.env.step(action)
+            reward += r
+            if terminated or truncated:
+                break
+        s = preprocess(s)
+        self.stacked_state = np.concatenate(
+            (self.stacked_state[1:], s[np.newaxis]), axis=0
+        )
+        return self.stacked_state, reward, terminated, truncated, info
+
+# ============================================================
+# Network (SAME AS TRAINING)
+# ============================================================
+
+class CNNActionValue(nn.Module):
+    def __init__(self, in_channels, action_dim):
+        super().__init__()
+        self.conv1 = nn.Conv2d(in_channels, 16, 8, 4)
+        self.conv2 = nn.Conv2d(16, 32, 4, 2)
+        self.fc1 = nn.Linear(32 * 9 * 9, 256)
+        self.fc2 = nn.Linear(256, action_dim)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        x = F.relu(self.conv2(x))
+        x = x.view(x.size(0), -1)
+        x = F.relu(self.fc1(x))
+        return self.fc2(x)
+
+
+def clock_callback(msg):
+    global sim_time_sec
+    sim_time_sec = msg.clock.secs + msg.clock.nsecs * 1e-9
+
+
+class OdomPoseListener:
+    def __init__(self, topic="/odom"):
+        self.x = 0.0
+        self.y = 0.0
+        self.lock = Lock()
+        rospy.Subscriber(topic, Odometry, self._callback)
+
+    def _callback(self, msg):
+        with self.lock:
+            self.x = msg.pose.pose.position.x
+            self.y = msg.pose.pose.position.y
+
+    def get_pose(self):
+        with self.lock:
+            return self.x, self.y
+
+
+
+# -------------------------
+# IMAGE CALLBACK
+# -------------------------
+def _image_callback(msg):
+    global current_image
+    current_image = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+
+
+
+def channel_callback(msg):
+    global channels
+
+    # Extract raw data
+    flat = np.array(msg.data, dtype=np.float32)
+
+    # Read the layout dims
+    dims = msg.layout.dim
+
+    num_ch = dims[0].size   # 2 → do NOT overwrite channels
+    d1 = dims[1].size       # 3
+    d2 = dims[2].size       # 8
+    d3 = dims[3].size       # 16
+
+    # Reconstruct stacked tensor (2, 3, 8, 16)
+    stacked = flat.reshape((num_ch, d1, d2, d3))
+
+    real = stacked[0]       # (3,8,16)
+    imag = stacked[1]       # (3,8,16)
+
+    # Convert numpy to torch
+    real_t = torch.from_numpy(real)
+    imag_t = torch.from_numpy(imag)
+
+    # Correct: channels becomes complex tensor (3,8,16)
+    channels = torch.complex(real_t, imag_t)
+
+def render_done_cb(msg):
+    global last_completed
+    last_completed = msg.data
+
+
+def save_video_frame(img, path, fps=20):
+    """Save a single frame to a video file."""
+    global _video_writers
+    
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+
+    if path not in _video_writers:
+        h, w = img.shape[:2]
+        fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+        _video_writers[path] = cv2.VideoWriter(path, fourcc, fps, (w, h))
+    
+    _video_writers[path].write(img)
+
+
+def image_callback1(msg):
+    global prev_frame_global1
+    path_ = output_dir + "Video/cam1.mp4" 
+    img = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+    # img = cv2.resize(img, (640, 480))
+
+    if prev_frame_global1 is None:
+        prev_frame_global1 = img.copy()
+        save_video_frame(img, path_)
+        return
+
+    # Skip EXACT same frame (Gazebo freeze detection)
+    if np.array_equal(img, prev_frame_global1):
+        return
+    
+    save_video_frame(img, path_)
+    prev_frame_global1 = img.copy()
+ 
+
+def image_callback2(msg):
+    global prev_frame_global2
+    path_ = output_dir + "Video/cam2.mp4" 
+    img = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+    # img = cv2.resize(img, (640, 480))
+
+    if prev_frame_global2 is None:
+        prev_frame_global2 = img.copy()
+        save_video_frame(img, path_)
+        return
+
+    # Skip EXACT same frame (Gazebo freeze detection)
+    if np.array_equal(img, prev_frame_global2):
+        return
+    
+    save_video_frame(img, path_)
+    prev_frame_global2 = img.copy()
+
+def image_callback3(msg):
+    global prev_frame_global3
+    path_ = output_dir + "Video/cam3.mp4" 
+    img = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+    # img = cv2.resize(img, (640, 480))
+
+    if prev_frame_global3 is None:
+        prev_frame_global3 = img.copy()
+        save_video_frame(img, path_)
+        return
+
+    # Skip EXACT same frame (Gazebo freeze detection)
+    if np.array_equal(img, prev_frame_global3):
+        return
+    
+    save_video_frame(img, path_)
+    prev_frame_global3 = img.copy()
+    
+def image_callback4(msg):
+    global prev_frame_global4
+    path_ = output_dir + "Video/cam4.mp4" 
+    img = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+    # img = cv2.resize(img, (640, 480))
+
+    if prev_frame_global4 is None:
+        prev_frame_global4 = img.copy()
+        save_video_frame(img, path_)
+        return
+
+    if np.array_equal(img, prev_frame_global4):
+        return
+    
+    save_video_frame(img, path_)
+    prev_frame_global4 = img.copy()
+
+def image_callback5(msg):
+    global prev_frame_global5
+    path_ = output_dir + "Video/cam5.mp4" 
+    img = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+    # img = cv2.resize(img, (640, 480))
+
+    if prev_frame_global5 is None:
+        prev_frame_global5 = img.copy()
+        save_video_frame(img, path_)
+        return
+
+    # Skip EXACT same frame (Gazebo freeze detection)
+    if np.array_equal(img, prev_frame_global5):
+        return
+    
+    save_video_frame(img, path_)
+    prev_frame_global5 = img.copy()
+
+
+def get_base_env(env):
+    while hasattr(env, "env"):
+        env = env.env
+    return env
+
+def count_parameters(model):
+    """Returns total number of trainable parameters and estimated size in MB."""
+    total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    # Assuming float32 (4 bytes per parameter)
+    size_mb = total_params * 4 / (1024 ** 2)
+    return total_params, size_mb
+
+def print_model_summary(models: dict):
+    """Prints a table with model names, parameter counts, and sizes."""
+    print(f"{'Model':<20} {'Params (M)':>12} {'Size (MB)':>12}")
+    print("-" * 46)
+    total_params = 0
+    total_size = 0
+    for name, model in models.items():
+        params, size = count_parameters(model)
+        print(f"{name:<20} {params/1e6:>12.3f} {size:>12.2f}")
+        total_params += params
+        total_size += size
+    print("-" * 46)
+    print(f"{'TOTAL':<20} {total_params/1e6:>12.3f} {total_size:>12.2f} MB\n")
+
+if __name__ == "__main__":
+    rospy.init_node('Gazebo_test', anonymous=True)
+    DEVICE = "cpu" #torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    pose_listener = OdomPoseListener("/odom")
+    print("Subscribed to /odom")
+
+    rospy.Subscriber("/channels", Float32MultiArray, channel_callback, queue_size=10)
+    rospy.Subscriber("/image_raw2", Image, _image_callback)
+    rospy.Subscriber("/clock", Clock, clock_callback)
+    rospy.Subscriber("/render_done", Int32, render_done_cb)
+
+    # rospy.Subscriber("/cam_front/world_cam/image_raw", Image, image_callback1)
+    # rospy.Subscriber("/cam_back/world_cam/image_raw", Image, image_callback2)
+    # rospy.Subscriber("/cam_left/world_cam/image_raw", Image, image_callback3)
+    # rospy.Subscriber("/cam_right/world_cam/image_raw", Image, image_callback4)
+    # rospy.Subscriber("/cam_top/world_cam/image_raw", Image, image_callback5)
+
+    flag_pub = rospy.Publisher('/render_trigger', Int32, queue_size=10)
+
+
+    MODEL_PATH = "training/gazebo/gazebo_step_230000.pt"    #gazebo_step_50000 gazebo_best
+
+    env = ImageEnv(GazeboEnv("/home/icon-group/catkin_ws/src/i_jepa/jepa_world_laptop/jepa_world/src/path_points.csv"))
+
+    state_dim = (4, 84, 84)
+    action_dim = env.action_space.n
+    print(action_dim)
+    model = CNNActionValue(state_dim[0], action_dim).to(DEVICE)
+    model.load_state_dict(torch.load(MODEL_PATH, map_location=DEVICE))
+    model.eval()
+
+    encoder = ViTEncoder().to(DEVICE)
+    decoder = ViTDecoder().to(DEVICE)
+    temporal = TemporalTransformer().to(DEVICE)
+    
+
+    ae = torch.load(AE_CKPT, map_location=DEVICE)
+    encoder.load_state_dict(ae["encoder"])
+    decoder.load_state_dict(ae["decoder"])
+
+
+    temporal.load_state_dict(torch.load(TEMP_CKPT, map_location=DEVICE))
+
+    encoder.eval()
+    decoder.eval()
+    temporal.eval()
+
+        # ================= RESOURCE MONITOR INIT =================
+    models = {
+        "DQN": model,
+        "ViTEncoder": encoder,
+        "ViTDecoder": decoder,
+        "TemporalTransformer": temporal
+    }
+
+    print("\n========= MODEL SIZE =========")
+    print_model_summary(models)
+
+    model_times = {
+        "ViTEncoder": [],
+        "ViTDecoder": [],
+        "TemporalTransformer": [],
+        "DQN": []
+    }
+
+    total_inference_times = []
+    cpu_usages = []
+    ram_usages = []
+    gpu_memories = []
+
+    process = psutil.Process(os.getpid())
+    # =========================================================
+
+
+
+    print("Model loaded successfully "+MODEL_PATH)
+
+    # while channels is None:
+    #     print("Connecting with Sionna...")
+
+    datapath = output_dir + "Baseline_results.pt"
+
+    state, _ = env.reset()
+    done = False
+    total_reward = 0.0
+
+    eval_scores = []
+    score = 0
+    frame_id = 0
+    real_start_time = time.time()
+    sim_start_time = None
+    prev_act = 0
+    dataset = {"step": [],"poses": [], "reward": [],"channels": [],"uplink_com_status": [],"action":[]}
+    noise_ratio = 0.000115
+    num_power_loss= 0
+
+    base_env = get_base_env(env)
+    base_env.set_visual_mode(0)
+    ROLLOUT_STEPS = 5
+    while not rospy.is_shutdown() and not done:
+
+        if(last_completed is None or frame_id==0):
+            channels_t = torch.fft.fft(channels)
+            g = channels_t[0]     # shape: [8, 16]
+
+            if current_image is not None:
+
+                if sim_start_time is None and sim_time_sec > 0:
+                    sim_start_time = sim_time_sec
+                source_img,timg = base_env.get_obs_with_patch(0,False)
+                cv2.imshow("source_img",source_img)
+                cv2.waitKey(1)
+                with torch.no_grad():
+                    # ===== START TOTAL TIMER =====
+                    if DEVICE == "cuda":
+                        torch.cuda.synchronize()
+                    total_start = time.perf_counter()
+                    # =============================
+
+
+                    flag_pub.publish(1)
+                    while (last_completed!=1):
+                        af = 0
+
+
+
+                    orig_np = np.transpose(source_img, (2, 0, 1))      # HWC → CHW
+                    orig_np = orig_np.astype(np.float32) / 255.0      # normalize
+                    orig_t = torch.from_numpy(orig_np).unsqueeze(0)   # add batch
+                    orig_t = orig_t.to(DEVICE)
+
+                    token_img = []
+
+                    if DEVICE == "cuda": torch.cuda.synchronize()
+                    t0 = time.perf_counter()
+
+                    tokens_ = encoder(orig_t)
+
+                    if DEVICE == "cuda": torch.cuda.synchronize()
+                    t1 = time.perf_counter()
+                    model_times["ViTEncoder"].append(t1 - t0)
+
+
+                    if DEVICE == "cuda": torch.cuda.synchronize()
+                    t0 = time.perf_counter()
+
+                    patches_ = decoder(tokens_)
+
+                    if DEVICE == "cuda": torch.cuda.synchronize()
+                    t1 = time.perf_counter()
+                    model_times["ViTDecoder"].append(t1 - t0)   # (1,196,108)
+
+                    pred_img_ = patches_to_image(patches_) # (1,3,84,84)
+                    img_ = chw_to_hwc(pred_img_[0].cpu())
+                    # print(img_.shape)
+
+                    token_img.append(img_)
+
+                    if DEVICE == "cuda": torch.cuda.synchronize()
+                    t0 = time.perf_counter()
+
+
+
+
+                    for step in range(ROLLOUT_STEPS):
+                        tokens = temporal(tokens_)            # (1,196,256)
+
+                        patches = decoder(tokens)            # (1,196,108)
+                        pred_img = patches_to_image(patches) # (1,3,84,84)
+                        img = chw_to_hwc(pred_img[0].cpu())
+                        token_img.append(img)
+
+                    if DEVICE == "cuda": torch.cuda.synchronize()
+                    t1 = time.perf_counter()
+                    model_times["TemporalTransformer"].append(t1 - t0)
+
+                    g_best = torch.abs(g).max()
+
+                    channel_condition = (noise_ratio > g_best.item())
+                    px, py = pose_listener.get_pose()
+                    print(state.shape)
+                    s = torch.FloatTensor(state).unsqueeze(0).to(DEVICE)
+
+                    if DEVICE == "cuda": torch.cuda.synchronize()
+                    t0 = time.perf_counter()
+
+                    action = model(s).argmax().item()
+
+                    if DEVICE == "cuda": torch.cuda.synchronize()
+                    t1 = time.perf_counter()
+                    model_times["DQN"].append(t1 - t0)
+
+                    # action = model(s).argmax().item()
+
+                    if(channel_condition==True):
+                        action = prev_act
+                        num_power_loss += 1
+                        print(channel_condition, g_best)
+                        dataset["uplink_com_status"].append(0)
+                    else:
+                        dataset["uplink_com_status"].append(1)
+
+                    # print(model(s))
+                    # print(action)
+
+                    state, reward, terminated, truncated, _ = env.step(action)
+
+                    # ===== END TOTAL TIMER =====
+                    if DEVICE == "cuda":
+                        torch.cuda.synchronize()
+                    total_end = time.perf_counter()
+                    total_inference_times.append(total_end - total_start)
+
+                    cpu_usages.append(psutil.cpu_percent())
+                    ram_usages.append(process.memory_info().rss / (1024 ** 2))
+
+                    if DEVICE == "cuda":
+                        gpu_memories.append(torch.cuda.memory_allocated() / (1024 ** 2))
+                    else:
+                        gpu_memories.append(0)
+                    # ===========================
+
+
+                    dataset["step"].append(frame_id)
+                    dataset["poses"].append([float(px), float(py)])
+                    dataset["reward"].append(reward)
+                    dataset["channels"].append(channels_t)
+                    dataset["action"].append(action)
+
+                    if terminated or truncated:
+                        print("Episode finished.")
+                        done = True
+                    else:
+                        done = False
+
+                    frame_id += 1
+                    score += reward
+
+                    last_completed = None
+                    prev_act = action
+
+
+
+    cv2.destroyAllWindows()
+
+    print("\n========= PER-MODEL INFERENCE TIME =========")
+    for name, times in model_times.items():
+        if len(times) > 0:
+            print(f"{name:<22} Avg: {np.mean(times)*1000:.3f} ms | "
+                f"Max: {np.max(times)*1000:.3f} ms")
+
+    print("\n========= TOTAL INFERENCE =========")
+    print(f"Average total inference: {np.mean(total_inference_times)*1000:.3f} ms")
+    print(f"Max total inference: {np.max(total_inference_times)*1000:.3f} ms")
+
+    print("\n========= SYSTEM RESOURCE USAGE =========")
+    print(f"Average CPU usage: {np.mean(cpu_usages):.2f}%")
+    print(f"Peak CPU usage: {np.max(cpu_usages):.2f}%")
+    print(f"Average RAM usage: {np.mean(ram_usages):.2f} MB")
+    print(f"Peak RAM usage: {np.max(ram_usages):.2f} MB")
+
+    if DEVICE == "cuda":
+        print(f"Average GPU memory: {np.mean(gpu_memories):.2f} MB")
+        print(f"Peak GPU memory: {np.max(gpu_memories):.2f} MB")
+
+    print("================================================\n")
+
+
+    eval_scores.append(score)
+    avg_score = np.mean(eval_scores)
+
+    real_total_time = time.time() - real_start_time
+    sim_total_time = sim_time_sec - sim_start_time if sim_start_time else 0
+
+    timing_path = output_dir+"timing_info.txt"
+
+    os.makedirs(os.path.dirname(timing_path), exist_ok=True)
+
+    with open(timing_path, "w") as f:
+        f.write(f"Real time (seconds): {real_total_time}\n")
+        f.write(f"Simulation time (seconds): {sim_total_time}\n")
+        f.write(f"Total Reward: {avg_score}\n")
+        f.write(f"Total frames: {frame_id}\n")
+
+    print("Saved timing info to:", timing_path)
+
+    torch.save(dataset, datapath)
+    print("Saved dataset with", len(dataset["poses"]), "samples")
+    print("Total frames:", frame_id)
+    print(f"Average evaluation score = {avg_score}")
+    print("Total steps loss power", num_power_loss)

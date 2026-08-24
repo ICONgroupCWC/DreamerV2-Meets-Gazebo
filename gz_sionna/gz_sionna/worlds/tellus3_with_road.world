@@ -1,0 +1,565 @@
+<sdf version='1.7'>
+  <world name='default'>
+
+    <gui>
+      <camera name='gzclient_camera'>
+        <pose>-5.73 3.76 8.10 0 1.1316 -0.4398</pose>
+      </camera>
+    </gui>
+    <gravity>0 0 -9.8</gravity>
+    <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
+    <atmosphere type="adiabatic" />
+    <physics default="0" name="default_physics" type="ode">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+    <scene>
+      <ambient>1 1 1 1</ambient> <!-- <ambient>0.4 0.4 0.4 1</ambient> -->
+      <background>0.7 0.7 0.7 1</background>
+      <shadows>0</shadows>
+      <grid>true</grid>
+      <origin_visual>false</origin_visual>
+    </scene>
+    <spherical_coordinates>
+      <surface_model>EARTH_WGS84</surface_model>
+      <latitude_deg>0</latitude_deg>
+      <longitude_deg>0</longitude_deg>
+      <elevation>0</elevation>
+      <heading_deg>0</heading_deg>
+    </spherical_coordinates>
+
+
+    <light name='sun' type='directional'>
+      <cast_shadows>1</cast_shadows>
+      <pose>0 0 10 0 -0 0</pose>
+      <diffuse>1 1 1 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+      <spot>
+        <inner_angle>0</inner_angle>
+        <outer_angle>0</outer_angle>
+        <falloff>0</falloff>
+      </spot>
+    </light>
+    <model name='ground_plane'>
+      <static>1</static>
+      <link name='link'>
+        <collision name='collision'>
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+          <surface>
+            <!-- <contact>
+              <collide_bitmask>65535</collide_bitmask>
+              <ode/>
+            </contact> -->
+            <friction>
+              <ode>
+                <mu>1.0</mu>
+                <mu2>1.0</mu2>
+              </ode>
+              <torsional>
+                <ode/>
+              </torsional>
+            </friction>
+            <bounce/>
+          </surface>
+          <max_contacts>10</max_contacts>
+        </collision>
+        <visual name='visual'>
+          <cast_shadows>0</cast_shadows>
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grey</name>
+            </script>
+          </material>
+        </visual>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <!-- <gravity>0 0 -9.8</gravity>
+    <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
+    <atmosphere type='adiabatic'/>
+    <physics type='ode'>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+    <scene>
+      <ambient>0.4 0.4 0.4 1</ambient>
+      <background>0.7 0.7 0.7 1</background>
+      <shadows>1</shadows>
+    </scene>
+    <wind/>
+    <spherical_coordinates>
+      <surface_model>EARTH_WGS84</surface_model>
+      <latitude_deg>0</latitude_deg>
+      <longitude_deg>0</longitude_deg>
+      <elevation>0</elevation>
+      <heading_deg>0</heading_deg>
+    </spherical_coordinates> -->
+    <model name='my_model'>
+      <static>1</static>
+      <link name='link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://tellus/meshes/tellus.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://tellus/meshes/tellus.dae</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose>12.5658 -8.04915 0 0 -0 0</pose>
+    </model>
+    <state world_name='default'>
+      <sim_time>101 960000000</sim_time>
+      <real_time>103 608888421</real_time>
+      <wall_time>1746686133 461184577</wall_time>
+      <iterations>101960</iterations>
+      <model name='ground_plane'>
+        <pose>0 0 0 0 -0 0</pose>
+        <scale>1 1 1</scale>
+        <link name='link'>
+          <pose>0 0 0 0 -0 0</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='my_model'>
+        <pose>0.008105 0.000273 0 0 -0 0</pose>
+        <scale>1 1 1</scale>
+        <link name='link'>
+          <pose>0.008105 0.000273 0 0 -0 0</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <light name='sun'>
+        <pose>0 0 10 0 -0 0</pose>
+      </light>
+    </state>
+    <gui fullscreen='0'>
+      <camera name='user_camera'>
+        <pose>0 0 14.1731 3.14159 1.57079 3.14159</pose>
+        <view_controller>orbit</view_controller>
+        <projection_type>perspective</projection_type>
+      </camera>
+    </gui>
+
+
+<!-- <actor name="actor_walking1">
+  <skin>
+    <filename>https://fuel.gazebosim.org/1.0/Mingfei/models/actor/tip/files/meshes/walk.dae</filename>
+    <scale>1.0</scale>
+  </skin>
+  <animation name="walk">
+    <filename>https://fuel.gazebosim.org/1.0/Mingfei/models/actor/tip/files/meshes/walk.dae</filename>
+    <interpolate_x>true</interpolate_x>
+  </animation>
+   <link name="collision_link">
+    <collision name="collision">
+      <geometry>
+
+        <cylinder>
+          <radius>0.3</radius> 
+          <length>1.7</length> 
+        </cylinder>
+      </geometry>
+      <surface>
+        <contact>
+          <ode/>
+        </contact>
+        <friction>
+          <ode/>
+        </friction>
+      </surface>
+    </collision>
+
+    <kinematic>1</kinematic>
+    <self_collide>0</self_collide>
+  </link>
+  
+  <script>
+    <loop>true</loop>
+    <delay_start>0.0</delay_start>
+    <auto_start>true</auto_start>
+    <trajectory id="0" type="walk" tension="0.6">
+      <waypoint><time>0</time><pose>1 0 0.0 0 0 0</pose></waypoint>
+      <waypoint><time>2</time><pose>2 0 0.0 0 0 0</pose></waypoint>
+      <waypoint><time>2.5</time><pose>2 0 0.0 0 0 1.57</pose></waypoint>
+      <waypoint><time>4</time><pose>2 2 0.0 0 0 1.57</pose></waypoint>
+      <waypoint><time>4.5</time><pose>2 2 0.0 0 0 3.142</pose></waypoint>
+      <waypoint><time>6</time><pose>1 2 0.0 0 0 3.142</pose></waypoint>
+      <waypoint><time>6.5</time><pose>1 2 0.0 0 0 -1.57</pose></waypoint>
+      <waypoint><time>8</time><pose>1 0 0.0 0 0 -1.57</pose></waypoint>
+      <waypoint><time>8.5</time><pose>1 0 0.0 0 0 0</pose></waypoint>
+    </trajectory>
+  </script>
+</actor>
+
+<actor name="actor_walking2">
+  <skin>
+    <filename>https://fuel.gazebosim.org/1.0/Mingfei/models/actor/tip/files/meshes/walk.dae</filename>
+    <scale>1.0</scale>
+  </skin>
+  <animation name="walk">
+    <filename>https://fuel.gazebosim.org/1.0/Mingfei/models/actor/tip/files/meshes/walk.dae</filename>
+    <interpolate_x>true</interpolate_x>
+  </animation>
+   <link name="collision_link">
+    <collision name="collision">
+      <geometry>
+        
+        <cylinder>
+          <radius>0.3</radius> 
+          <length>1.7</length> 
+        </cylinder>
+      </geometry>
+      <surface>
+        <contact>
+          <ode/>
+        </contact>
+        <friction>
+          <ode/>
+        </friction>
+      </surface>
+    </collision>
+
+    <kinematic>1</kinematic>
+    <self_collide>0</self_collide>
+  </link>
+  
+  <script>
+    <loop>true</loop>
+    <delay_start>0.0</delay_start>
+    <auto_start>true</auto_start>
+    <trajectory id="0" type="walk" tension="0.6">
+      <waypoint><time>0</time><pose>10 4 0.0 0 0 3.142</pose></waypoint>
+      <waypoint><time>2</time><pose>2 0 0.0 0 0 0</pose></waypoint>
+      <waypoint><time>2.5</time><pose>2 0 0.0 0 0 1.57</pose></waypoint>
+      <waypoint><time>4</time><pose>2 2 0.0 0 0 1.57</pose></waypoint>
+      <waypoint><time>4.5</time><pose>2 2 0.0 0 0 3.142</pose></waypoint>
+      <waypoint><time>6</time><pose>5 2 0.0 0 0 3.142</pose></waypoint>
+      <waypoint><time>6.5</time><pose>5 2 0.0 0 0 -1.57</pose></waypoint>
+      <waypoint><time>8</time><pose>5 0 0.0 0 0 -1.57</pose></waypoint>
+      <waypoint><time>8.5</time><pose>5 0 0.0 0 0 0</pose></waypoint>
+    </trajectory>
+  </script>
+</actor> -->
+
+<!-- <road name="main_road">
+  <width>0.5</width>            
+  <point>0 0 0</point>          
+  <point>20 0 0</point>         
+  <point>40 10 0</point>        
+  <point>60 10 0</point>     
+   <material>
+        <script>
+          <uri>model://road_material/materials/scripts</uri>
+          <uri>model://road_material/materials/textures</uri>
+          <name>MyRoad/Road</name>
+        </script>
+      </material>
+</road> -->
+
+<!-- <model name="road_section">
+  <static>true</static>
+  <pose>0 0 0 0 0 0</pose>
+  <link name="road_link">
+    <visual name="road_visual">
+      <geometry>
+        <box>
+          <size>10 0.50 0.01</size>
+        </box>
+      </geometry>
+      <material>
+        <script>
+          <uri>model://road_material/materials/scripts</uri>
+          <uri>model://road_material/materials/textures</uri>
+          <name>MyRoad/Road</name>
+        </script>
+      </material>
+    </visual>
+    <collision name="road_collision">
+      <geometry>
+        <box>
+
+          <size>10 0.50 0.01</size> 
+        </box>
+      </geometry>
+    </collision>
+  </link>
+</model> -->
+
+     <include>
+      <uri>model://world_camera</uri>
+      <name>cam_front</name>
+      <pose>9.054021 10.588752 1.915707 0 0 -2.579030</pose>
+    </include>
+
+    <!-- BACK CAMERA -->
+    <include>
+      <uri>model://world_camera</uri>
+      <name>cam_back</name>
+      <pose>9.314169 -4.133807 1.780432 0 0 2.637201</pose>
+    </include>
+
+    <!-- LEFT CAMERA -->
+    <include>
+      <uri>model://world_camera</uri>
+      <name>cam_left</name>
+      <pose>-11.247843 -5.598201 1.780432 0 0.108940 0.589042</pose>
+    </include>
+
+    <!-- RIGHT CAMERA -->
+    <include>
+      <uri>model://world_camera</uri>
+      <name>cam_right</name>
+      <pose>-11.125655 10.631718 1.457388 -0.004173 0.062735 -0.556765</pose>
+    </include>
+
+    <!-- TOP CAMERA -->
+    <include>
+      <uri>model://world_camera</uri>
+      <name>cam_top</name>
+      <pose>-5.640081 3.112618 14.053880 1.565592 1.417189 -0.005144</pose>
+    </include>
+
+
+  <include>
+  <uri>model://road_model</uri>
+  <pose>0 0 0 0 0 0</pose>
+</include>
+
+<include>
+  <uri>model://radio_tower_</uri>
+  <pose> 26.627333 6.138611 3.308903 0 0 0</pose>
+</include>
+
+<include>
+  <uri>model://radio_tower_</uri>
+  <pose> 11.449739 12.156978 3.308903 0 0 0</pose>
+</include>
+
+<include>
+  <uri>model://cross_line</uri>
+  <pose>0 0 0 0 0 0</pose>
+</include>
+
+<include>
+<uri>model://race_end</uri>
+<pose>0 0 0 0 0 0</pose>
+</include>
+
+<include>
+<uri>model://receiver_1</uri>
+<pose>  8.238358 12.161644  3.568326 1.421040 0 0</pose>
+</include>
+
+<include>
+<uri>model://receiver_2</uri>
+<pose>-9.704537 -5.593559 3.077197 -1.528551 0 0 </pose>
+</include>
+
+<include>
+<uri>model://receiver_3</uri>
+<pose> -9.805386 12.161644  3.568326  1.421040 0 0 </pose>
+</include>
+ <!-- 8.238777 -5.601792 3.077197 -1.528551 0 0
+  -4.008763 0.092765 3.274808 0 0 0 -->
+
+<!-- <include>
+  <uri>model://cube</uri>
+  <name>cube_1</name>
+  <pose>7.809810 8.423260  0 0 0 0</pose>
+</include>
+
+<include>
+  <uri>model://ball</uri>
+  <name>ball_1</name>
+  <pose>1.683725 8.405119  0 0 0 0</pose>
+</include>
+
+<include>
+  <uri>model://cylinder</uri>
+  <name>cylinder_1</name>
+  <pose>2.323899 2.778099  0 0 0 0</pose>
+</include>
+
+<include>
+  <uri>model://cube</uri>
+  <name>cube_2</name>
+  <pose>2.814624 0.555732  0 0 0 0</pose>
+</include>
+
+<include>
+  <uri>model://cylinder</uri>
+  <name>cylinder_2</name>
+  <pose>2.411660  -2.047805  0 0 0 0</pose>
+</include>
+
+<include>
+  <uri>model://ball</uri>
+  <name>ball_2</name>
+  <pose>8.686228 -2.047810 0 0 0 0</pose>
+</include>
+
+<include>
+  <uri>model://cylinder</uri>
+  <name>cylinder_3</name>
+  <pose>9.274621 1.227368  0 0 0 0</pose>
+</include>
+
+<include>
+  <uri>model://cube</uri>
+  <name>cube_3</name>
+  <pose>10.178213 7.527594  0 0 0 0</pose>
+</include>
+
+<include>
+  <uri>model://ball</uri>
+  <name>ball_3</name>
+  <pose>9.244602  10.747196  0 0 0 0</pose>
+</include>
+
+<include>
+  <uri>model://cube</uri>
+  <name>cube_4</name>
+  <pose>4.503686 -8.171050  0 0 0 0</pose>
+</include>
+
+<include>
+  <uri>model://ball</uri>
+  <name>ball_4</name>
+  <pose>2.328079 -8.332348  0 0 0 0</pose>
+</include>
+
+<include>
+  <uri>model://cylinder</uri>
+  <name>cylinder_4</name>
+  <pose>-11.150761  -2.211683  0 0 0 0</pose>
+</include>
+
+<include>
+  <uri>model://ball</uri>
+  <name>ball_5</name>
+  <pose>-10.061080 -8.313878  0 0 0 0</pose>
+</include>
+
+<include>
+  <uri>model://cube</uri>
+  <name>cube_5</name>
+  <pose>-10.628513 3.182821  0 0 0 0</pose>
+</include>
+
+<include>
+  <uri>model://cylinder</uri>
+  <name>cylinder_5</name>
+  <pose>-11.712104 9.665686  0 0 0 0</pose>
+</include>
+
+<include>
+  <uri>model://cube</uri>
+  <name>cube_6</name>
+  <pose>-1.856461  8.704827  0 0 0 0</pose>
+</include> 
+
+<include>
+  <uri>model://ball</uri>
+  <name>ball_6</name>
+  <pose>7.762015 3.934394  0 0 0 0</pose>
+</include>
+
+<include>
+  <uri>model://cylinder</uri>
+  <name>cylinder_6</name>
+  <pose>10.670957 -5.428221  0 0 0 0</pose>
+</include>
+
+<include>
+  <uri>model://ball</uri>
+  <name>ball_7</name>
+  <pose>6.192001 -7.197225  0 0 0 0</pose>
+</include>
+
+<include>
+  <uri>model://cube</uri>
+  <name>cube_7</name>
+  <pose>-7.197225 -6.432545  0 0 0 0</pose>
+</include>
+
+<include>
+  <uri>model://cylinder</uri>
+  <name>cylinder_7</name>
+  <pose>-8.323398 -8.323398  0 0 0 0</pose>
+</include>
+
+<include>
+  <uri>model://cube</uri>
+  <name>cube_8</name>
+  <pose>-11.255310 -4.816126  0 0 0 0</pose>
+</include>
+
+<include>
+  <uri>model://ball</uri>
+  <name>ball_8</name>
+  <pose>-10.707787 8.113759  0 0 0 0</pose>
+</include>
+
+<include>
+  <uri>model://cylinder</uri>
+  <name>cylinder_8</name>
+  <pose>-10.486228 11.339570  0 0 0 0</pose>
+</include>  -->
+
+<!-- <include>
+  <uri>model://road_lamp</uri>
+</include> -->
+
+
+  </world>
+</sdf>

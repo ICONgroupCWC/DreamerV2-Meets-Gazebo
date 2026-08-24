@@ -1,0 +1,43 @@
+<launch>
+  <!-- === Arguments === -->
+  <arg name="model" default="burger"/>
+  <arg name="use_sim_time" default="true"/>
+
+  <arg name="open_rviz" default="true"/>
+
+  <!-- Robot placement  1,522649-->
+  <arg name="robot_name" default="jetbot_1"/>
+  <arg name="x_pos" default="5.163443"/>
+  <arg name="y_pos" default="7.766847"/>
+  <arg name="z_pos" default="0.1"/>
+  <arg name="yaw"   default="-1.573762"/> 
+ 
+  <!-- <arg name="robot_name" default="jetbot_1"/>
+  <arg name="x_pos" default="-4.978963185574756"/>
+  <arg name="y_pos" default="2.1908339594290007"/>
+  <arg name="z_pos" default="0.1"/>
+  <arg name="yaw"   default="1.4610034096408715"/>  -->
+
+  <!-- === Gazebo world === --> <!-- <arg name="world_name" value="$(find gz_sionna)/worlds/empty.world"/> -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find gz_sionna)/worlds/tellus3_with_road.world"/>
+    <!-- <arg name="world_name" value="$(find aws_robomaker_hospital_world)/worlds/hospital.world"/> -->
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="gui" value="false"/>
+  </include>
+
+
+    <param name="robot_description" command="$(find xacro)/xacro $(find jetbot_world)/urdf/jetbot_real.urdf.xacro"/>
+    <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"
+          args="-urdf -param robot_description -model $(arg robot_name) -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -Y $(arg yaw)"
+          output="screen"/>
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen"/>
+
+
+  <node name="camera_view_node" pkg="jepa_world" type="img_show.py" output="screen"/>
+  <node name="wireless_channel" pkg="wireless_jepa" type="wireless_jepa.py" output="screen"/>
+
+
+
+</launch>
