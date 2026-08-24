@@ -1,4 +1,4 @@
-# DreamerV2 Meets Gazebo — C-JEPA & W-JEPA
+# DreamerV2 Meets Gazebo - C-JEPA & W-JEPA
 
 This repository contains the implementation of **Control-JEPA (C-JEPA)** and **Wireless-JEPA (W-JEPA)** for predictive and communication-aware robotic control.
 
