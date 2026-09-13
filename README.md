@@ -56,4 +56,42 @@ First, launch the Gazebo environment:
 ```bash
 roslaunch gz_sionna jetbot_tellus.launch 
 ```
+Then load the pretrained C-JEPA weights and fine-tune the model using observations and robot dynamics from Gazebo:
 
+```bash
+python3 c_jepa/control_jepa/test/train_gazebo.py
+```
+
+### Wireless-JEPA Training 
+
+CSI data are generated from Sionna RT and synchronized with the corresponding robot pose, velocity, and latent control state from C-JEPA. The resulting dataset is then used to train W-JEPA.
+
+```bash
+python3 c_jepa/wireless_jepa/src/train.py
+```
+## Running the Coupled Framework
+
+Launch the Gazebo environment:
+
+```bash
+roslaunch gz_sionna jetbot_tellus.launch 
+```
+Once the Gazebo environment is running, start the Control-JEPA (C-JEPA) module in a separate terminal:
+
+```bash
+python3 c_jepa/control_jepa/test/Gazebo_model_test.py
+```
+With Gazebo, C-JEPA, and W-JEPA running simultaneously, the coupled remote-control demo is ready to run.
+
+```bash
+python3 c_jepa/wireless_jepa/src/wireless_jepa.py
+```
+
+## Demo in action
+
+[![Coupled C-JEPA and W-JEPA Remote Robotic Control](https://img.youtube.com/vi/hw_bdS3P6Oc/0.jpg)](https://www.youtube.com/watch?v=hw_bdS3P6Oc)
+
+## Contributors
+1. H.P. Madushanka ([madushanka.hewapathiranage@oulu.fi](madushanka.hewapathiranage@oulu.fi))
+2. Sumudu Samarakoon ([sumudu.samarakoon@oulu.fi](sumudu.samarakoon@oulu.fi))
+3. Mehdi Bennis ([mehdi.bennis@oulu.fi](mehdi.bennis@oulu.fi))
